@@ -21,6 +21,8 @@ float screenTransY = 0;
 float screenRotation = 0;
 float screenZ = 50f;
 
+boolean translateMode = false;
+
 private class Target
 {
   float x = 0;
@@ -82,8 +84,12 @@ void draw() {
     Target t = targets.get(i);
     translate(t.x, t.y); //center the drawing coordinates to the center of the screen
     rotate(radians(t.rotation));
-    if (trialIndex==i)
+    if (trialIndex==i) {
       fill(255, 0, 0, 192); //set color to semi translucent
+      //stroke(255, 0, 0);
+      //rect(0, 0, t.z, t.z);
+      //noStroke();
+    }
     else
       fill(128, 60, 60, 128); //set color to semi translucent
     rect(0, 0, t.z, t.z);
@@ -91,21 +97,23 @@ void draw() {
   }
 
   //===========DRAW CURSOR SQUARE=================
-  pushMatrix();
-  translate(width/2, height/2); //center the drawing coordinates to the center of the screen
-  translate(screenTransX, screenTransY);
-  rotate(radians(screenRotation));
+  //pushMatrix();
+  //translate(width/2, height/2); //center the drawing coordinates to the center of the screen
+  // translate(screenTransX, screenTransY);
+  // rotate(radians(screenRotation));
   noFill();
   strokeWeight(3f);
   stroke(160);
-  rect(0, 0, screenZ, screenZ);
-  popMatrix();
+  rect(mouseX, mouseY, screenZ, screenZ);
+  //popMatrix();
 
   //===========DRAW EXAMPLE CONTROLS=================
   fill(255);
   scaffoldControlLogic(); //you are going to want to replace this!
   text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchToPix(.8f));
 }
+
+
 
 //my example design for control, which is terrible
 void scaffoldControlLogic()
@@ -158,11 +166,26 @@ void mousePressed()
   }
 }
 
+void mouseClicked(MouseEvent evt) {
+  if (evt.getCount() == 2) {
+    translateMode = !translateMode;
+    println("double click");
+  };
+}
+
+
+void mouseMoved()
+{
+  if (translateMode) {
+    screenTransX = mouseX;
+    screenTransY = mouseY;
+  }
+}
 
 void mouseReleased()
 {
   //check to see if user clicked middle of screen within 3 inches
-  if (dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
+  if (!translateMode && dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
   {
     if (userDone==false && !checkForSuccess())
       errorCount++;
