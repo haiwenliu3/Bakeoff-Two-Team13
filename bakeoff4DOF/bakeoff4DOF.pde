@@ -22,8 +22,12 @@ float screenRotation = 0;
 float screenZ = 50f;
 
 boolean translateMode = false;
+boolean resizingMode = true;
 float logo_square_x = width / 2;
 float logo_square_y = height / 2;
+float logo_square_angle = 0;
+float logo_square_height = 100;
+float logo_square_width = 100;
 
 private class Target
 {
@@ -91,6 +95,13 @@ void draw() {
       //stroke(255, 0, 0);
       //rect(0, 0, t.z, t.z);
       //noStroke();
+      
+      // arrow from cursor square to target square
+      //stroke(126);
+      //line(logo_square_x, logo_square_y, t.x, t.y);
+      //println(t.x);
+      //println(t.y);
+      //noStroke();
     }
     else
       fill(128, 60, 60, 128); //set color to semi translucent
@@ -102,18 +113,36 @@ void draw() {
   //pushMatrix();
   //translate(width/2, height/2); //center the drawing coordinates to the center of the screen
   // translate(screenTransX, screenTransY);
-  // rotate(radians(screenRotation));
+  rotate(radians(logo_square_angle));
   noFill();
   strokeWeight(3f);
   stroke(160);
   
-  rect(logo_square_x, logo_square_y, screenZ, screenZ);
+  rect(logo_square_x, logo_square_y, logo_square_height, logo_square_width);
+  
+  // draw controls to manipulate the square
+  if (!translateMode) {
+    // size scaler box
+    rect(logo_square_x + (screenZ) / 2, logo_square_y + (screenZ) / 2, logo_square_height, logo_square_width);
+    
+    // rotater
+  }
+  
+  // resizer
+  if (!resizingMode) {
+    logo_square_height = mouseX - logo_square_x;
+    logo_square_width = mouseY - logo_square_y;
+  }
+  
+  
   //popMatrix();
 
   //===========DRAW EXAMPLE CONTROLS=================
-  fill(255);
-  scaffoldControlLogic(); //you are going to want to replace this!
-  text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchToPix(.8f));
+  //fill(255);
+  //scaffoldControlLogic(); //you are going to want to replace this!
+  //text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchToPix(.8f));
+  
+ 
 }
 
 
@@ -185,8 +214,17 @@ void mouseMoved()
   }
 }
 
+void mouseDragged(MouseEvent evt) {
+  if (!translateMode) {
+    if (dist(logo_square_x + screenZ, logo_square_y + screenZ, mouseX, mouseY) < 5) {
+      resizingMode = true;
+    }
+  }
+}
+
 void mouseReleased()
 {
+  resizingMode = false;
   //check to see if user clicked middle of screen within 3 inches
   if (!translateMode && dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
   {
