@@ -22,6 +22,8 @@ float screenRotation = 0;
 float screenZ = 50f;
 
 boolean translateMode = false;
+float logo_square_x = width / 2;
+float logo_square_y = height / 2;
 
 private class Target
 {
@@ -104,7 +106,8 @@ void draw() {
   noFill();
   strokeWeight(3f);
   stroke(160);
-  rect(mouseX, mouseY, screenZ, screenZ);
+  
+  rect(logo_square_x, logo_square_y, screenZ, screenZ);
   //popMatrix();
 
   //===========DRAW EXAMPLE CONTROLS=================
@@ -177,8 +180,8 @@ void mouseClicked(MouseEvent evt) {
 void mouseMoved()
 {
   if (translateMode) {
-    screenTransX = mouseX;
-    screenTransY = mouseY;
+    logo_square_x = mouseX;
+    logo_square_y = mouseY;
   }
 }
 
