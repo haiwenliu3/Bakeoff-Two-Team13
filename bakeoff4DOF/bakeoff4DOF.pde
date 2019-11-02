@@ -22,7 +22,7 @@ float screenRotation = 0;
 float screenZ = 50f;
 
 boolean translateMode = false;
-boolean resizingMode = true;
+boolean resizingMode = false;
 float logo_square_x = width / 2;
 float logo_square_y = height / 2;
 float logo_square_angle = 0;
@@ -118,20 +118,20 @@ void draw() {
   strokeWeight(3f);
   stroke(160);
   
-  rect(logo_square_x, logo_square_y, logo_square_height, logo_square_width);
+  rect(logo_square_x, logo_square_y, logo_square_width, logo_square_height);
   
   // draw controls to manipulate the square
   if (!translateMode) {
     // size scaler box
-    rect(logo_square_x + (screenZ) / 2, logo_square_y + (screenZ) / 2, logo_square_height, logo_square_width);
+    rect(logo_square_x + logo_square_width / 2, logo_square_y + logo_square_height / 2, 20, 20);
     
     // rotater
   }
   
   // resizer
-  if (!resizingMode) {
-    logo_square_height = mouseX - logo_square_x;
-    logo_square_width = mouseY - logo_square_y;
+  if (resizingMode) {
+    logo_square_width = mouseX - logo_square_x;
+    logo_square_height = mouseY - logo_square_y;
   }
   
   
@@ -216,7 +216,7 @@ void mouseMoved()
 
 void mouseDragged(MouseEvent evt) {
   if (!translateMode) {
-    if (dist(logo_square_x + screenZ, logo_square_y + screenZ, mouseX, mouseY) < 5) {
+    if (dist(logo_square_x + logo_square_width / 2, logo_square_y + logo_square_height / 2, mouseX, mouseY) < 10) {
       resizingMode = true;
     }
   }
