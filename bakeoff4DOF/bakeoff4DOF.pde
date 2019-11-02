@@ -126,6 +126,7 @@ void draw() {
     rect(logo_square_x + logo_square_width / 2, logo_square_y + logo_square_height / 2, 20, 20);
     
     // rotater
+    
   }
   
   // resizer
@@ -201,7 +202,22 @@ void mousePressed()
 void mouseClicked(MouseEvent evt) {
   if (evt.getCount() == 2) {
     translateMode = !translateMode;
+    
     println("double click");
+    
+    if (!resizingMode && !translateMode && dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
+    {
+      if (userDone==false && !checkForSuccess())
+        errorCount++;
+  
+      trialIndex++; //and move on to next trial
+  
+      if (trialIndex==trialCount && userDone==false)
+      {
+        userDone = true;
+        finishTime = millis();
+      }
+    }
   };
 }
 
@@ -226,19 +242,6 @@ void mouseReleased()
 {
   resizingMode = false;
   //check to see if user clicked middle of screen within 3 inches
-  if (!translateMode && dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
-  {
-    if (userDone==false && !checkForSuccess())
-      errorCount++;
-
-    trialIndex++; //and move on to next trial
-
-    if (trialIndex==trialCount && userDone==false)
-    {
-      userDone = true;
-      finishTime = millis();
-    }
-  }
 }
 
 
