@@ -20,10 +20,16 @@ float screenTransX = 0;
 float screenTransY = 0;
 float screenRotation = 0;
 float screenZ = 50f;
+
 boolean checkDrag;
 boolean onCenter;
 float diffX;
 float diffY;
+
+boolean translateMode = false;
+boolean resizingMode = false;
+//float screenZ = 100;
+//float screenZ = 100;
 
 private class Target
 {
@@ -86,11 +92,29 @@ void draw() {
     Target t = targets.get(i);
     translate(t.x, t.y); //center the drawing coordinates to the center of the screen
     rotate(radians(t.rotation));
-    if (trialIndex==i)
+
+    if (trialIndex==i) {
       fill(255, 0, 0, 192); //set color to semi translucent
-    else
-      fill(128, 60, 60, 128); //set color to semi translucent
+      rect(0, 0, t.z, t.z);
+      fill(255, 255, 255, 192);
+      circle(0,0,5);
+      //stroke(255, 0, 0);
+      //rect(0, 0, t.z, t.z);
+      //noStroke();
+      
+      // arrow from cursor square to target square
+      //stroke(126);
+      //line(screenTransX, screenTransY, t.x, t.y);
+      //println(t.x);
+      //println(t.y);
+      //noStroke();
+    }
+    else{
+    fill(128, 60, 60, 128); //set color to semi translucent
     rect(0, 0, t.z, t.z);
+    fill(255, 255, 255, 128);
+    circle(0,0,5);
+    }
     popMatrix();
   }
 
@@ -102,63 +126,66 @@ void draw() {
   noFill();
   strokeWeight(3f);
   stroke(160);
+  
   for(int i=0; i<trialCount; i++) {
     Target t = targets.get(i);  
-    boolean closeDist = dist(t.x, t.y, screenTransX, screenTransY)<inchToPix(.05f); //has to be within +-0.05"
+    boolean closeDist = dist(t.x + width/2, t.y+height/2, screenTransX+width/2, screenTransY+height/2)<inchToPix(.05f); //has to be within +-0.05"
     boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation, screenRotation)<=5;
     boolean closeZ = abs(t.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"
     if (closeDist) {
-      stroke(52, 168, 50);
-      if (closeRotation & closeZ) {
-        fill(52,168,50, 192);
+      stroke(252, 240, 3);
+      if (closeZ) {
+        stroke(52, 168, 50);
+        if (closeRotation) {fill(52,168,50, 192);}
       }
     }
   }
-  for (int i=0;i<trialCount; i++) {
-    Target t = targets.get(i);  asdf
-    boolean closeDist = dist(t.x, t.y, screenTransX, screenTransY)<inchToPix(.05f); //has to be within +-0.05"
-    if (closeDist) {
-      onCenter = true; 
-    }
-    if (onCenter) {break;}
-    else {onCenter = false;}
-  }
+
   rect(0, 0, screenZ, screenZ);
+  
+  // draw controls to manipulate the square
+  if (!translateMode) {
+    // size scaler box
+    rect(screenZ / 2, screenZ / 2, 20, 20);
+    
+    // rotater
+    
+  }
+  
+  // resizer
+  if (resizingMode) {
+    screenZ = constrain(2 * min(mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)), 0.01, 1000);
+    //screenZ = mouseX - screenTransX;
+    //screenZ = mouseY - screenTransY;
+  }
+  
   popMatrix();
   
-  Target t = targets.get(trialIndex);
-  line(t.x+width/2, screenTransX+width/2, t.y+height/2, screenTransY+height/2);
-  stroke(255);
-  
-
   //===========DRAW EXAMPLE CONTROLS=================
   fill(255);
   scaffoldControlLogic(); //you are going to want to replace this!
   text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchToPix(.8f));
+  
+ 
 }
+
+
 
 //my example design for control, which is terrible
 void scaffoldControlLogic()
 {
   //upper left corner, rotate counterclockwise
-  text("CCW", inchToPix(.4f), inchToPix(.4f));
-  if (mousePressed && dist(0, 0, mouseX, mouseY)<inchToPix(.8f))
-    screenRotation--;
+  //text("CCW", inchToPix(.4f), inchToPix(.4f));
+  //if (mousePressed && dist(0, 0, mouseX, mouseY)<inchToPix(.8f))
+    //screenRotation--;
 
   //upper right corner, rotate clockwise
-  text("CW", width-inchToPix(.4f), inchToPix(.4f));
-  if (mousePressed && dist(width, 0, mouseX, mouseY)<inchToPix(.8f))
+  text("rotate", width/2 - inchToPix(.8f), height - inchToPix(.8f));
+  if (mousePressed && dist(width/2 - inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
     screenRotation++;
-
-  //lower left corner, decrease Z
-  text("-", inchToPix(.4f), height-inchToPix(.4f));
-  if (mousePressed && dist(0, height, mouseX, mouseY)<inchToPix(.8f))
-    screenZ = constrain(screenZ-inchToPix(.02f), .01, inchToPix(4f)); //leave min and max alone!
-
-  //lower right corner, increase Z
-  text("+", width-inchToPix(.4f), height-inchToPix(.4f));
-  if (mousePressed && dist(width, height, mouseX, mouseY)<inchToPix(.8f))
-    screenZ = constrain(screenZ+inchToPix(.02f), .01, inchToPix(4f)); //leave min and max alone! 
+  }
+  
+  text("submit", width/2 + inchToPix(.8f), height - inchToPix(.8f));
 }
 
 
@@ -171,51 +198,10 @@ void mousePressed()
   }
 }
 
-void mouseDragged()
-{
-  if (onCenter) { //changing rotation and size
-    //top right
-    float cornerTRX = screenTransX + width/2 - screenZ/2 - mouseX;
-    float cornerTRY = screenTransY + height/2 - screenZ/2 - mouseY;
-    if ((cornerTRX < inchToPix(.05f)) & (cornerTRY < inchToPix(.05f))) {
-      //screenZ = ;
-      float helper = abs(mouseX - screenTransX + width/2);
-      print(inchToPix(helper));
-      screenZ = constrain(inchToPix(helper), .01, inchToPix(4f));
-    }
-    
-  }
-  else { //moving placement of square
-    if (!checkDrag){
-      diffX = screenTransX+(width/2) - mouseX;
-      diffY = screenTransY+(height/2) - mouseY;
-      checkDrag = true; 
-    }
-    if (checkDrag) {
-      print(diffX, diffY);
-      if ((abs(diffX) < (screenZ/2 - inchToPix(.05f))) & (abs(diffY) < (screenZ/2 - inchToPix(.05f)))){
-        System.out.println("dragging!");
-        float moveX = mouseX+diffX - width/2;
-        float moveY = mouseY+diffY - height/2;
-        screenTransX = moveX;
-        screenTransY = moveY;
-      }
-    }
-  }
-}
-
-
-void mouseReleased()
-{
-
-  checkDrag = false;
-}
 
 void mouseClicked(MouseEvent evt) {
-  if (evt.getCount() == 2) {    
-    println("double click");
     //check to see if user clicked middle of screen within 3 inches
-    if (dist(width/2, height/2, mouseX, mouseY)<inchToPix(3f))
+  if (dist(width/2 + inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
     {
       if (userDone==false && !checkForSuccess())
         errorCount++;
@@ -227,18 +213,61 @@ void mouseClicked(MouseEvent evt) {
         userDone = true;
         finishTime = millis();
       }
+      
+      screenTransX = 0;
+      screenTransY = 0;
+      screenRotation = 0;
+      screenZ = 50f;
     }
   }
+}
+
+
+void mouseMoved()
+{
+  if (translateMode) {
+    screenTransX = mouseX;
+    screenTransY = mouseY;
+  }
+}
+
+void mouseDragged(MouseEvent evt) {
+  if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
+    resizingMode = true;
+  }
+  if (!resizingMode) { //moving placement of square
+    if (!checkDrag){
+      diffX = screenTransX+width/2 - mouseX;
+      diffY = screenTransY+height/2 - mouseY;
+      checkDrag = true; 
+    }
+    if (checkDrag) {
+      print(diffX, diffY);
+      if ((abs(diffX) < (screenZ/2 - inchToPix(.05f))) & (abs(diffY) < (screenZ/2 - inchToPix(.05f)))){
+        System.out.println("dragging!");
+        float moveX = mouseX - width/2;
+        float moveY = mouseY - height/2;
+        screenTransX = moveX;
+        screenTransY = moveY;
+      }
+    }
+  }
+}
+
+void mouseReleased()
+{
+  resizingMode = false;
+  //check to see if user clicked middle of screen within 3 inches
 }
 
 
 //probably shouldn't modify this, but email me if you want to for some good reason.
 public boolean checkForSuccess()
 {
-  Target t = targets.get(trialIndex);	
+  Target t = targets.get(trialIndex);  
   boolean closeDist = dist(t.x, t.y, screenTransX, screenTransY)<inchToPix(.05f); //has to be within +-0.05"
   boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation, screenRotation)<=5;
-  boolean closeZ = abs(t.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"	
+  boolean closeZ = abs(t.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"  
 
   println("Close Enough Distance: " + closeDist + " (cursor X/Y = " + t.x + "/" + t.y + ", target X/Y = " + screenTransX + "/" + screenTransY +")");
   println("Close Enough Rotation: " + closeRotation + " (rot dist="+calculateDifferenceBetweenAngles(t.rotation, screenRotation)+")");
