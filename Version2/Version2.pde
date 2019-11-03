@@ -31,6 +31,13 @@ boolean resizingMode = false;
 //float screenZ = 100;
 //float screenZ = 100;
 
+PImage rotate_left;
+PImage rotate_right;
+float rotate_left_button_x;
+float rotate_left_button_y;
+float rotate_right_button_x;
+float rotate_right_button_y;
+
 private class Target
 {
   float x = 0;
@@ -149,6 +156,17 @@ void draw() {
     rect(screenZ / 2, screenZ / 2, 20, 20);
     
     // rotater
+    rotate_left = loadImage("arrowsbox-01.png");
+    rotate_right = loadImage("arrowsbox-02.png");
+    
+    // TODO: replace with actual coordinates of cursor square (get width + height)
+    rotate_left_button_x = -screenZ;
+    rotate_left_button_y = -screenZ;
+    image(rotate_left, rotate_left_button_x, rotate_left_button_y, 50,50);
+    
+    rotate_right_button_x = screenZ / 2;
+    rotate_right_button_y = -screenZ;
+    image(rotate_right, rotate_right_button_x, rotate_right_button_y, 50, 50);
     
   }
   
@@ -158,6 +176,18 @@ void draw() {
     //screenZ = mouseX - screenTransX;
     //screenZ = mouseY - screenTransY;
   }
+  
+  //upper right corner, rotate clockwise
+  // text("rotate", width/2 - inchToPix(.8f), height - inchToPix(.8f));
+  // line(rotate_left_button_x, rotate_left_button_y, mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2));
+  if (mousePressed && dist(rotate_left_button_x, rotate_left_button_y, mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)) < 50){
+    screenRotation -= 2;
+  }
+  
+  if (mousePressed && dist(rotate_right_button_x, rotate_right_button_y, mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)) < 50){
+    screenRotation += 2;
+  }
+  
   
   popMatrix();
   
@@ -170,8 +200,6 @@ void draw() {
 }
 
 
-
-//my example design for control, which is terrible
 void scaffoldControlLogic()
 {
   //upper left corner, rotate counterclockwise
@@ -180,12 +208,13 @@ void scaffoldControlLogic()
     //screenRotation--;
 
   //upper right corner, rotate clockwise
-  text("rotate", width/2 - inchToPix(.8f), height - inchToPix(.8f));
-  if (mousePressed && dist(width/2 - inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
-    screenRotation++;
-  }
+  //text("rotate", width/2 - inchToPix(.8f), height - inchToPix(.8f));
+  //line(rotate_left_button_x, rotate_left_button_y, mouseX, mouseY);
+  //if (mousePressed && dist(rotate_left_button_x, rotate_left_button_y, mouseX, mouseY) < inchToPix(.8f)){
+  //  screenRotation++;
+  //}
   
-  text("submit", width/2 + inchToPix(.8f), height - inchToPix(.8f));
+  // text("submit", width/2 + inchToPix(.8f), height - inchToPix(.8f));
 }
 
 
