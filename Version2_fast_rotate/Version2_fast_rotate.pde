@@ -336,6 +336,7 @@ void mouseReleased()
 {
   resizingMode = false;
   rotatingMode = false;
+  checkDrag = false;
   //check to see if user clicked middle of screen within 3 inches
 }
 
