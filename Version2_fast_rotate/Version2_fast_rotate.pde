@@ -297,7 +297,7 @@ void mouseDragged(MouseEvent evt) {
   
   // when user clicks on the bulb
   if (is_bulb_clicked) {
-    if (!resizingMode)
+    if (!resizingMode & !checkDrag)
     rotatingMode = true;
     print("rotatingMode!");
   }
@@ -317,10 +317,10 @@ void mouseDragged(MouseEvent evt) {
   
   
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
-    if (!rotatingMode) 
+    if (!rotatingMode & !checkDrag) 
     resizingMode = true;
   }
-  if (!resizingMode) { //moving placement of square
+  if (!resizingMode & !rotatingMode) { //moving placement of square
     if (!checkDrag){
       diffX = screenTransX+width/2 - mouseX;
       diffY = screenTransY+height/2 - mouseY;
