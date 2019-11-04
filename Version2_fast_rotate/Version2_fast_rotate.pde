@@ -189,7 +189,12 @@ void draw() {
     // rotate in the direction of the angle?? - map direction (if negative) to negative radians
     // rotate proportional to the distance between cursor and original
     
-    // do the mapping here
+    float angle = degrees(atan2(screenTransY + height/2 - mouseY,screenTransX + width/2 - mouseX));
+    print(degrees(angle));
+    print("   ");
+    screenRotation = angle - 90;
+    
+    
   }
   
   
@@ -292,7 +297,9 @@ void mouseDragged(MouseEvent evt) {
   
   // when user clicks on the bulb
   if (is_bulb_clicked) {
+    if (!resizingMode)
     rotatingMode = true;
+    print("rotatingMode!");
   }
   //if (!rotatingMode) {
   //  if (!checkDragRotate) {
@@ -310,6 +317,7 @@ void mouseDragged(MouseEvent evt) {
   
   
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
+    if (!rotatingMode) 
     resizingMode = true;
   }
   if (!resizingMode) { //moving placement of square
@@ -319,9 +327,7 @@ void mouseDragged(MouseEvent evt) {
       checkDrag = true;
     }
     if (checkDrag) {
-      print(diffX, diffY);
       if ((abs(diffX) < (screenZ/2 - inchToPix(.05f))) & (abs(diffY) < (screenZ/2 - inchToPix(.05f)))){
-        System.out.println("dragging!");
         float moveX = mouseX - width/2;
         float moveY = mouseY - height/2;
         screenTransX = moveX;
