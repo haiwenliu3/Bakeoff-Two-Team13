@@ -29,7 +29,7 @@ float diffY;
 float diffXDragger;
 float diffYDragger;
 
-boolean translateMode = false;
+boolean translateMode = true;
 boolean resizingMode = false;
 //float screenZ = 100;
 //float screenZ = 100;
@@ -121,7 +121,7 @@ void draw() {
       fill(255, 0, 0, 192); //set color to semi translucent
       rect(0, 0, t.z, t.z);
       fill(252, 240, 3);
-      circle(0,0,5);
+      circle(0,0,10);
       circle(-t.z/2, -t.z/2, 5);
       circle(-t.z/2, t.z/2, 5);
       circle(t.z/2, -t.z/2, 5);
@@ -137,18 +137,19 @@ void draw() {
       //println(t.y);
       //noStroke();
     }
+    /*
     else{
     fill(128, 60, 60, 128); //set color to semi translucent
     rect(0, 0, t.z, t.z);
     fill(255, 255, 255, 128);
-    circle(0,0,5);
+    circle(0,0,10);
     circle(-t.z/2, -t.z/2, 5);
     circle(-t.z/2, t.z/2, 5);
     circle(t.z/2, -t.z/2, 5);
     circle(t.z/2, t.z/2, 5);
     }
 
-    
+    */
     popMatrix();
   }
 
@@ -219,6 +220,7 @@ void draw() {
   //  screenRotation += 2;
   //}
   circle(-screenZ/2, -screenZ/2, 30);
+  circle(0,0,10);
   
   popMatrix();
 /*  
@@ -286,6 +288,9 @@ void mousePressed()
 
 
 void mouseClicked(MouseEvent evt) {
+  if (translateMode){
+    translateMode = false;
+  }
   
   print(dragger_x, dragger_y, mouseX, mouseY);
     //check to see if user clicked middle of screen within 3 inches
@@ -307,22 +312,28 @@ void mouseClicked(MouseEvent evt) {
       //screenTransY = 0;
       //screenRotation = 0;
       //screenZ = 50f;
+      
+      translateMode = true;
   }
 }
-/*
 
+/*
 void mouseMoved()
 {
   if (translateMode) {
-    screenTransX = mouseX;
-    screenTransY = mouseY;
+    screenTransX = mouseX - width/2;
+    screenTransY = mouseY - height/2;
+    dragger_x = mouseX - screenZ/2;
+    dragger_y = mouseY - screenZ/2;
   }
 }
-*/
 
+*/
 float diffXRotate;
 float diffYRotate;
 boolean checkDragRotate;
+
+
 void mouseDragged(MouseEvent evt) {
   //boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
   boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 15;
@@ -345,13 +356,13 @@ void mouseDragged(MouseEvent evt) {
   //       println("REACHED");
   //    }
   //  }
-  //}
+  //}*/
   
-/*  
+
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
     if (!rotatingMode & !checkDrag) 
     resizingMode = true;
-  }*/
+  }
   if (!resizingMode & !rotatingMode) { //moving placement of square
     if (!checkDrag){
       diffX = screenTransX+width/2 - mouseX;
