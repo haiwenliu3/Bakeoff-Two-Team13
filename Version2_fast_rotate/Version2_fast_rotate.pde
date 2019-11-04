@@ -39,7 +39,8 @@ float rotate_right_button_x;
 float rotate_right_button_y;
 
 float dragger_x;
-float dragger_y;
+float dragger_y1;
+float dragger_y2;
 boolean rotatingMode = false;
 
 String msg = "Drag center of square";
@@ -155,43 +156,34 @@ void draw() {
       if (closeZ) {
         msg = "Now rotate.";
         stroke(52, 168, 50);
-        if (closeRotation) {fill(52,168,50, 192);}
+        if (closeRotation) {fill(250, 250, 250, 150);}
       }
     } 
     
   }
+  
+  Target target = targets.get(trialIndex);  
+  boolean closeDist = dist(target.x + width/2, target.y+height/2, screenTransX+width/2, screenTransY+height/2)<inchToPix(.05f); //has to be within +-0.05"
+  boolean closeRotation = calculateDifferenceBetweenAngles(target.rotation, screenRotation)<=5;
+  boolean closeZ = abs(target.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"
+  if (closeDist & closeZ & closeRotation) {
+    fill(52,168,50, 192);
+  } 
 
   rect(0, 0, screenZ, screenZ);
   
-  // draw controls to manipulate the square
-  if (!translateMode) {
-    // size scaler box
-    rect(screenZ / 2, screenZ / 2, 20, 20);
-    
-    // rotater
-  }
-  
+
   // resizer
   if (resizingMode) {
     screenZ = constrain(2 * min(mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)), 0.01, 1000);
   }
   
-  // rotate by dragging the box around in an angle
-  
-  // line that is pointing in the angle of rotation (pointing up)
-  dragger_x = 0;
-  dragger_y = -screenZ * 3/4;
-  line(0, 0, dragger_x, dragger_y);
-  // circle that user drags to rotate
-  circle(dragger_x, dragger_y, 40);
-  
+
   if (rotatingMode) {
     // rotate in the direction of the angle?? - map direction (if negative) to negative radians
     // rotate proportional to the distance between cursor and original
     
     float angle = degrees(atan2(screenTransY + height/2 - mouseY,screenTransX + width/2 - mouseX));
-    print(degrees(angle));
-    print("   ");
     screenRotation = angle - 90;
     
     
@@ -211,6 +203,29 @@ void draw() {
   //}
   
   popMatrix();
+  
+  // draw controls to manipulate the square
+  if (!translateMode) {
+    // size scaler box
+    rect(width/2 + screenTransX + screenZ / 2, height/2 + screenTransY + screenZ / 2, 20, 20);
+    
+    // rotater
+  }
+  
+  // rotate by dragging the box around in an angle
+  
+  // line that is pointing in the angle of rotation (pointing up)
+  dragger_x = screenTransX + width/2;
+  dragger_y1 = screenTransY + height/2;
+  dragger_y2 = dragger_y1 - screenZ * 3/4;
+  line(dragger_x, dragger_y1, dragger_x, dragger_y2);
+  // circle that user drags to rotate
+  circle(dragger_x, dragger_y2, 40);
+  
+  //draw a line from center to the target
+  fill(255);
+  line(screenTransX + width/2, screenTransY + height/2, target.x + width/2, target.y + height/2);
+  
   
   //===========DRAW EXAMPLE CONTROLS=================
   fill(255);
@@ -271,10 +286,11 @@ void mouseClicked(MouseEvent evt) {
         finishTime = millis();
       }
       
-      screenTransX = 0;
-      screenTransY = 0;
-      screenRotation = 0;
-      screenZ = 50f;
+      if (screenZ < 40f) screenZ = 40f;
+      //screenTransX = 0;
+      //screenTransY = 0;
+      //screenRotation = 0;
+      //screenZ = 50f;
   }
 }
 
@@ -292,7 +308,7 @@ float diffXRotate;
 float diffYRotate;
 boolean checkDragRotate;
 void mouseDragged(MouseEvent evt) {
-  boolean is_bulb_clicked = dist(screenTransX+width/2 + dragger_x, screenTransY+height/2 + dragger_y, mouseX, mouseY) < 20;
+  boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
   
   
   // when user clicks on the bulb
