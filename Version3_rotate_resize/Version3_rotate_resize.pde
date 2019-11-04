@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -25,6 +26,8 @@ boolean checkDrag;
 boolean onCenter;
 float diffX;
 float diffY;
+float diffXDragger;
+float diffYDragger;
 
 boolean translateMode = false;
 boolean resizingMode = false;
@@ -39,8 +42,7 @@ float rotate_right_button_x;
 float rotate_right_button_y;
 
 float dragger_x;
-float dragger_y1;
-float dragger_y2;
+float dragger_y;
 boolean rotatingMode = false;
 
 String msg = "Drag center of square";
@@ -65,6 +67,9 @@ void setup() {
   rectMode(CENTER);
   textFont(createFont("Arial", inchToPix(.3f))); //sets the font to Arial that is 0.3" tall
   textAlign(CENTER);
+  
+  dragger_x = -screenZ/2 + width/2;
+  dragger_y = -screenZ/2 + height/2;
 
   //don't change this! 
   border = inchToPix(2f); //padding of 1.0 inches
@@ -110,12 +115,17 @@ void draw() {
     Target t = targets.get(i);
     translate(t.x, t.y); //center the drawing coordinates to the center of the screen
     rotate(radians(t.rotation));
+    
 
     if (trialIndex==i) {
       fill(255, 0, 0, 192); //set color to semi translucent
       rect(0, 0, t.z, t.z);
-      fill(255, 255, 255, 192);
+      fill(252, 240, 3);
       circle(0,0,5);
+      circle(-t.z/2, -t.z/2, 5);
+      circle(-t.z/2, t.z/2, 5);
+      circle(t.z/2, -t.z/2, 5);
+      circle(t.z/2, t.z/2, 5);
       //stroke(255, 0, 0);
       //rect(0, 0, t.z, t.z);
       //noStroke();
@@ -132,7 +142,13 @@ void draw() {
     rect(0, 0, t.z, t.z);
     fill(255, 255, 255, 128);
     circle(0,0,5);
+    circle(-t.z/2, -t.z/2, 5);
+    circle(-t.z/2, t.z/2, 5);
+    circle(t.z/2, -t.z/2, 5);
+    circle(t.z/2, t.z/2, 5);
     }
+
+    
     popMatrix();
   }
 
@@ -151,15 +167,11 @@ void draw() {
     boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation, screenRotation)<=5;
     boolean closeZ = abs(t.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"
     if (closeDist) {
-      msg = "Now rescale.";
-      stroke(252, 240, 3);
-      if (closeZ) {
-        msg = "Now rotate.";
-        stroke(52, 168, 50);
-        if (closeRotation) {fill(250, 250, 250, 150);}
+      stroke(52, 168, 50);
+      if (closeZ & closeRotation) {
+        fill(250, 250, 250, 150);
       }
     } 
-    
   }
   
   Target target = targets.get(trialIndex);  
@@ -172,19 +184,24 @@ void draw() {
 
   rect(0, 0, screenZ, screenZ);
   
-
+/*
   // resizer
   if (resizingMode) {
-    screenZ = constrain(2 * min(mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)), 0.01, 1000);
+    //screenZ = constrain(2 * min(mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)), 0.01, 1000);
+    screenZ = (2 * dist(mouseX, mouseY, screenTransX + width/2, screenTransY+height/2))/sqrt(2);
   }
   
-
+*/
   if (rotatingMode) {
     // rotate in the direction of the angle?? - map direction (if negative) to negative radians
     // rotate proportional to the distance between cursor and original
     
+    screenZ = constrain(((2 * dist(mouseX, mouseY, screenTransX + width/2, screenTransY+height/2))/sqrt(2)), 0.01, 1000);    
     float angle = degrees(atan2(screenTransY + height/2 - mouseY,screenTransX + width/2 - mouseX));
-    screenRotation = angle - 90;
+    screenRotation = angle - 45;
+    dragger_x = mouseX;
+    dragger_y = mouseY;
+
     
     
   }
@@ -201,9 +218,10 @@ void draw() {
   //if (mousePressed && dist(rotate_right_button_x, rotate_right_button_y, mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)) < 50){
   //  screenRotation += 2;
   //}
+  circle(-screenZ/2, -screenZ/2, 30);
   
   popMatrix();
-  
+/*  
   // draw controls to manipulate the square
   if (!translateMode) {
     // size scaler box
@@ -211,19 +229,15 @@ void draw() {
     
     // rotater
   }
-  
+*/  
   // rotate by dragging the box around in an angle
   
   // line that is pointing in the angle of rotation (pointing up)
-  dragger_x = screenTransX + width/2;
-  dragger_y1 = screenTransY + height/2;
-  dragger_y2 = dragger_y1 - screenZ * 3/4;
-  line(dragger_x, dragger_y1, dragger_x, dragger_y2);
+  //line(dragger_x, dragger_y1, dragger_x, dragger_y2);
   // circle that user drags to rotate
-  circle(dragger_x, dragger_y2, 40);
-  
+  //circle(dragger_x, dragger_y2, 40);
   //draw a line from center to the target
-  fill(255);
+  stroke(255);
   line(screenTransX + width/2, screenTransY + height/2, target.x + width/2, target.y + height/2);
   
   
@@ -236,8 +250,8 @@ void draw() {
   // background color of indicator matches the condition
   noStroke();
  
-    fill(255, 255, 255);
-    text(msg, 550, 50);
+  //fill(255);
+  //text(msg, 550, 50);
 
   
 }
@@ -272,6 +286,8 @@ void mousePressed()
 
 
 void mouseClicked(MouseEvent evt) {
+  
+  print(dragger_x, dragger_y, mouseX, mouseY);
     //check to see if user clicked middle of screen within 3 inches
   // if (dist(width/2 + inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
   if (evt.getCount() == 2) {
@@ -293,7 +309,7 @@ void mouseClicked(MouseEvent evt) {
       //screenZ = 50f;
   }
 }
-
+/*
 
 void mouseMoved()
 {
@@ -302,14 +318,14 @@ void mouseMoved()
     screenTransY = mouseY;
   }
 }
-
+*/
 
 float diffXRotate;
 float diffYRotate;
 boolean checkDragRotate;
 void mouseDragged(MouseEvent evt) {
-  boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
-  
+  //boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
+  boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 15;
   
   // when user clicks on the bulb
   if (is_bulb_clicked) {
@@ -331,23 +347,30 @@ void mouseDragged(MouseEvent evt) {
   //  }
   //}
   
-  
+/*  
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
     if (!rotatingMode & !checkDrag) 
     resizingMode = true;
-  }
+  }*/
   if (!resizingMode & !rotatingMode) { //moving placement of square
     if (!checkDrag){
       diffX = screenTransX+width/2 - mouseX;
       diffY = screenTransY+height/2 - mouseY;
+      diffXDragger = dragger_x - mouseX;
+      diffYDragger = dragger_y - mouseY;
       checkDrag = true;
+      print("dragging!");
     }
     if (checkDrag) {
       if ((abs(diffX) < (screenZ/2 - inchToPix(.05f))) & (abs(diffY) < (screenZ/2 - inchToPix(.05f)))){
         float moveX = mouseX - width/2;
         float moveY = mouseY - height/2;
-        screenTransX = moveX;
-        screenTransY = moveY;
+        screenTransX = moveX + diffX;
+        screenTransY = moveY + diffY;
+        dragger_x = mouseX + diffXDragger;
+        dragger_y = mouseY + diffYDragger;
+        //print(dragger_x, dragger_y);
+        //print("   ");
       }
     }
   }
