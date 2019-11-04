@@ -42,6 +42,12 @@ float dragger_x;
 float dragger_y;
 boolean rotatingMode = false;
 
+String msg = "Drag center of square";
+
+//boolean closeDist = false;
+//boolean closeRotation = false;
+//boolean closeZ = false;
+
 private class Target
 {
   float x = 0;
@@ -144,12 +150,15 @@ void draw() {
     boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation, screenRotation)<=5;
     boolean closeZ = abs(t.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"
     if (closeDist) {
+      msg = "Now rescale.";
       stroke(252, 240, 3);
       if (closeZ) {
+        msg = "Now rotate.";
         stroke(52, 168, 50);
         if (closeRotation) {fill(52,168,50, 192);}
       }
-    }
+    } 
+    
   }
 
   rect(0, 0, screenZ, screenZ);
@@ -160,28 +169,12 @@ void draw() {
     rect(screenZ / 2, screenZ / 2, 20, 20);
     
     // rotater
-    
-    //rotate_left = loadImage("arrowsbox-01.png");
-    //rotate_right = loadImage("arrowsbox-02.png");
-    
-    //// TODO: replace with actual coordinates of cursor square (get width + height)
-    //rotate_left_button_x = -screenZ;
-    //rotate_left_button_y = -screenZ;
-    //image(rotate_left, rotate_left_button_x, rotate_left_button_y, 50,50);
-    
-    //rotate_right_button_x = screenZ / 2;
-    //rotate_right_button_y = -screenZ;
-    //image(rotate_right, rotate_right_button_x, rotate_right_button_y, 50, 50);
-    
   }
   
   // resizer
   if (resizingMode) {
     screenZ = constrain(2 * min(mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)), 0.01, 1000);
-    //screenZ = mouseX - screenTransX;
-    //screenZ = mouseY - screenTransY;
   }
-  
   
   // rotate by dragging the box around in an angle
   
@@ -212,15 +205,21 @@ void draw() {
   //  screenRotation += 2;
   //}
   
-  
   popMatrix();
   
   //===========DRAW EXAMPLE CONTROLS=================
   fill(255);
   scaffoldControlLogic(); //you are going to want to replace this!
-  text("Trial " + (trialIndex+1) + " of " +trialCount, width/2, inchToPix(.8f));
+  text("Trial " + (trialIndex+1) + " of " +trialCount, 75, inchToPix(.8f), 150, 100);
   
+  // draw indicators
+  // background color of indicator matches the condition
+  noStroke();
  
+    fill(255, 255, 255);
+    text(msg, 550, 50);
+
+  
 }
 
 
