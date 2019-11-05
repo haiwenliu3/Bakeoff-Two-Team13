@@ -124,10 +124,10 @@ void draw() {
       rect(0, 0, t.z, t.z);
       fill(252, 240, 3);
       circle(0,0,10);
-      circle(-t.z/2, -t.z/2, 5);
-      circle(-t.z/2, t.z/2, 5);
-      circle(t.z/2, -t.z/2, 5);
-      circle(t.z/2, t.z/2, 5);
+      circle(-t.z/2, -t.z/2, 10);
+      circle(-t.z/2, t.z/2, 10);
+      circle(t.z/2, -t.z/2, 10);
+      circle(t.z/2, t.z/2, 10);
       //stroke(255, 0, 0);
       //rect(0, 0, t.z, t.z);
       //noStroke();
