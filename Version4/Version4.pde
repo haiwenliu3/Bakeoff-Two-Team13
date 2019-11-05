@@ -17,8 +17,8 @@ final int screenPPI = 72; //what is the DPI of the screen you are using
 //you can test this by drawing a 72x72 pixel rectangle in code, and then confirming with a ruler it is 1x1 inch. 
 
 //These variables are for my example design. Your input code should modify/replace these!
-float screenTransX = 0;
-float screenTransY = 0;
+float screenTransX = mouseX - width/2;
+float screenTransY = mouseY - height/2;
 float screenRotation = 0;
 float screenZ = 50f;
 
@@ -29,8 +29,9 @@ float diffY;
 float diffXDragger;
 float diffYDragger;
 
-boolean translateMode = false;
+boolean translateMode = true;
 boolean resizingMode = false;
+boolean setDraggerMode;;
 //float screenZ = 100;
 //float screenZ = 100;
 
@@ -41,8 +42,8 @@ float rotate_left_button_y;
 float rotate_right_button_x;
 float rotate_right_button_y;
 
-float dragger_x;
-float dragger_y;
+float dragger_x = mouseX - screenZ/2;
+float dragger_y = mouseY - screenZ/2;
 boolean rotatingMode = false;
 
 String msg = "Drag center of square";
@@ -68,8 +69,9 @@ void setup() {
   textFont(createFont("Arial", inchToPix(.3f))); //sets the font to Arial that is 0.3" tall
   textAlign(CENTER);
   
-  dragger_x = -screenZ/2 + width/2;
-  dragger_y = -screenZ/2 + height/2;
+  dragger_x = mouseX - screenZ/2;
+  dragger_y = mouseY - screenZ/2;
+  setDraggerMode = false;
 
   //don't change this! 
   border = inchToPix(2f); //padding of 1.0 inches
@@ -121,7 +123,7 @@ void draw() {
       fill(255, 0, 0, 192); //set color to semi translucent
       rect(0, 0, t.z, t.z);
       fill(252, 240, 3);
-      circle(0,0,5);
+      circle(0,0,10);
       circle(-t.z/2, -t.z/2, 5);
       circle(-t.z/2, t.z/2, 5);
       circle(t.z/2, -t.z/2, 5);
@@ -137,18 +139,19 @@ void draw() {
       //println(t.y);
       //noStroke();
     }
+    /*
     else{
     fill(128, 60, 60, 128); //set color to semi translucent
     rect(0, 0, t.z, t.z);
     fill(255, 255, 255, 128);
-    circle(0,0,5);
+    circle(0,0,10);
     circle(-t.z/2, -t.z/2, 5);
     circle(-t.z/2, t.z/2, 5);
     circle(t.z/2, -t.z/2, 5);
     circle(t.z/2, t.z/2, 5);
     }
 
-    
+    */
     popMatrix();
   }
 
@@ -219,6 +222,7 @@ void draw() {
   //  screenRotation += 2;
   //}
   circle(-screenZ/2, -screenZ/2, 30);
+  circle(0,0,10);
   
   popMatrix();
 /*  
@@ -286,6 +290,10 @@ void mousePressed()
 
 
 void mouseClicked(MouseEvent evt) {
+  if (translateMode){
+    translateMode = false;
+    setDraggerMode = false;
+  }
   
   print(dragger_x, dragger_y, mouseX, mouseY);
     //check to see if user clicked middle of screen within 3 inches
@@ -307,22 +315,43 @@ void mouseClicked(MouseEvent evt) {
       //screenTransY = 0;
       //screenRotation = 0;
       //screenZ = 50f;
+      
+      translateMode = true;
+      setDraggerMode = false;
+      screenTransX = mouseX - width/2;
+      screenTransY = mouseY - width/2;
+      screenRotation = 0;
+      dragger_x = mouseX - screenZ/2;
+      dragger_y = mouseY - screenZ/2;
   }
 }
-/*
+
 
 void mouseMoved()
 {
+  if (!setDraggerMode) {
+    diffXDragger = dragger_x - mouseX;
+    diffYDragger = dragger_y - mouseY;
+    setDraggerMode = true;
+    print("here");
+    print(diffXDragger, diffYDragger);
+  }
   if (translateMode) {
-    screenTransX = mouseX;
-    screenTransY = mouseY;
+      screenTransX = mouseX - width/2;
+      screenTransY = mouseY - height/2;
+      dragger_x = mouseX - screenZ/2;
+      dragger_y = mouseY - screenZ/2;
+      //dragger_x = mouseX + diffXDragger;
+      //dragger_y = mouseY + diffYDragger;
   }
 }
-*/
+
 
 float diffXRotate;
 float diffYRotate;
 boolean checkDragRotate;
+
+
 void mouseDragged(MouseEvent evt) {
   //boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
   boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 15;
@@ -345,13 +374,13 @@ void mouseDragged(MouseEvent evt) {
   //       println("REACHED");
   //    }
   //  }
-  //}
+  //}*/
   
-/*  
+
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
     if (!rotatingMode & !checkDrag) 
     resizingMode = true;
-  }*/
+  }
   if (!resizingMode & !rotatingMode) { //moving placement of square
     if (!checkDrag){
       diffX = screenTransX+width/2 - mouseX;
