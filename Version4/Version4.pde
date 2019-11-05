@@ -31,6 +31,7 @@ float diffYDragger;
 
 boolean translateMode = true;
 boolean resizingMode = false;
+boolean centerReached = false;
 boolean setDraggerMode;;
 //float screenZ = 100;
 //float screenZ = 100;
@@ -170,20 +171,26 @@ void draw() {
     boolean closeRotation = calculateDifferenceBetweenAngles(t.rotation, screenRotation)<=5;
     boolean closeZ = abs(t.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"
     if (closeDist) {
-      stroke(52, 168, 50);
       if (closeZ & closeRotation) {
         fill(250, 250, 250, 150);
       }
-    } 
+    }
   }
   
   Target target = targets.get(trialIndex);  
   boolean closeDist = dist(target.x + width/2, target.y+height/2, screenTransX+width/2, screenTransY+height/2)<inchToPix(.05f); //has to be within +-0.05"
   boolean closeRotation = calculateDifferenceBetweenAngles(target.rotation, screenRotation)<=5;
   boolean closeZ = abs(target.z - screenZ)<inchToPix(.05f); //has to be within +-0.05"
-  if (closeDist & closeZ & closeRotation) {
-    fill(52,168,50, 192);
-  } 
+  if (closeDist) {
+    stroke(52, 168, 50);
+    centerReached = true;
+    if (closeZ & closeRotation) {
+      fill(52,168,50, 192);
+    }
+  }
+  else {
+    centerReached = false;
+  }
 
   rect(0, 0, screenZ, screenZ);
   
@@ -296,9 +303,12 @@ void mouseClicked(MouseEvent evt) {
   }
   
   print(dragger_x, dragger_y, mouseX, mouseY);
+  print(rotatingMode);
     //check to see if user clicked middle of screen within 3 inches
   // if (dist(width/2 + inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
-  if (evt.getCount() == 2) {
+    
+  if (rotatingMode) {
+    print("should be checking for success");
       if (userDone==false && !checkForSuccess())
         errorCount++;
 
@@ -316,11 +326,14 @@ void mouseClicked(MouseEvent evt) {
       //screenRotation = 0;
       //screenZ = 50f;
       
+      rotatingMode = false;  
+      centerReached = false;
       translateMode = true;
       setDraggerMode = false;
       screenTransX = mouseX - width/2;
       screenTransY = mouseY - width/2;
       screenRotation = 0;
+      screenZ = 50f;
       dragger_x = mouseX - screenZ/2;
       dragger_y = mouseY - screenZ/2;
   }
@@ -344,6 +357,9 @@ void mouseMoved()
       //dragger_x = mouseX + diffXDragger;
       //dragger_y = mouseY + diffYDragger;
   }
+  if (!translateMode & centerReached) {
+    rotatingMode = true;
+  }
 }
 
 
@@ -354,8 +370,8 @@ boolean checkDragRotate;
 
 void mouseDragged(MouseEvent evt) {
   //boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
-  boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 15;
-  
+  //boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 15;
+/*  
   // when user clicks on the bulb
   if (is_bulb_clicked) {
     if (!resizingMode & !checkDrag)
@@ -374,14 +390,14 @@ void mouseDragged(MouseEvent evt) {
   //       println("REACHED");
   //    }
   //  }
-  //}*/
+  //}
   
 
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
     if (!rotatingMode & !checkDrag) 
     resizingMode = true;
-  }
-  if (!resizingMode & !rotatingMode) { //moving placement of square
+  }*/
+  if (!rotatingMode) { //moving placement of square
     if (!checkDrag){
       diffX = screenTransX+width/2 - mouseX;
       diffY = screenTransY+height/2 - mouseY;
@@ -392,6 +408,7 @@ void mouseDragged(MouseEvent evt) {
     }
     if (checkDrag) {
       if ((abs(diffX) < (screenZ/2 - inchToPix(.05f))) & (abs(diffY) < (screenZ/2 - inchToPix(.05f)))){
+        print("being dragged");
         float moveX = mouseX - width/2;
         float moveY = mouseY - height/2;
         screenTransX = moveX + diffX;
@@ -407,8 +424,7 @@ void mouseDragged(MouseEvent evt) {
 
 void mouseReleased()
 {
-  resizingMode = false;
-  rotatingMode = false;
+  //rotatingMode = false;
   checkDrag = false;
   //check to see if user clicked middle of screen within 3 inches
 }
