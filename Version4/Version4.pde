@@ -29,7 +29,7 @@ float diffY;
 float diffXDragger;
 float diffYDragger;
 
-boolean translateMode = true;
+boolean translateMode = false;
 boolean resizingMode = false;
 boolean centerReached = false;
 boolean setDraggerMode;;
@@ -297,6 +297,7 @@ void mousePressed()
 
 
 void mouseClicked(MouseEvent evt) {
+  boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 20;
   if (evt.getCount() == 2) {
       rotatingMode = false;  
       centerReached = false;
@@ -314,10 +315,14 @@ void mouseClicked(MouseEvent evt) {
     translateMode = false;
     setDraggerMode = false;
   }
+  else {
+    if(!is_bulb_clicked & (dist(mouseX, mouseY, screenTransX + width/2, screenTransY + height/2) < screenZ/2)) {
+      translateMode = true; 
+    }
+  }
     //check to see if user clicked middle of screen within 3 inches
   // if (dist(width/2 + inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
     
-  boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 20;
   
   if (!rotatingMode & is_bulb_clicked) rotatingMode = true;
   else {
@@ -342,7 +347,7 @@ void mouseClicked(MouseEvent evt) {
       
       rotatingMode = false;  
       centerReached = false;
-      translateMode = true;
+      //translateMode = true;
       setDraggerMode = false;
       screenTransX = mouseX - width/2;
       screenTransY = mouseY - height/2;
