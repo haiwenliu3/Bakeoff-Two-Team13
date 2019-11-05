@@ -228,7 +228,7 @@ void draw() {
   //if (mousePressed && dist(rotate_right_button_x, rotate_right_button_y, mouseX - (screenTransX+width/2), mouseY - (screenTransY+height/2)) < 50){
   //  screenRotation += 2;
   //}
-  circle(-screenZ/2, -screenZ/2, 30);
+  circle(-screenZ/2, -screenZ/2, 40);
   circle(0,0,10);
   
   popMatrix();
@@ -307,6 +307,10 @@ void mouseClicked(MouseEvent evt) {
     //check to see if user clicked middle of screen within 3 inches
   // if (dist(width/2 + inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
     
+  boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 20;
+  
+  if (!rotatingMode & is_bulb_clicked) rotatingMode = true;
+  else {
   if (rotatingMode) {
     print("should be checking for success");
       if (userDone==false && !checkForSuccess())
@@ -336,7 +340,7 @@ void mouseClicked(MouseEvent evt) {
       screenZ = 50f;
       dragger_x = mouseX - screenZ/2;
       dragger_y = mouseY - screenZ/2;
-  }
+  }}
 }
 
 
@@ -357,9 +361,9 @@ void mouseMoved()
       //dragger_x = mouseX + diffXDragger;
       //dragger_y = mouseY + diffYDragger;
   }
-  if (!translateMode & centerReached) {
-    rotatingMode = true;
-  }
+  //if (!translateMode & centerReached) {
+  //  rotatingMode = true;
+  //}
 }
 
 
@@ -370,10 +374,10 @@ boolean checkDragRotate;
 
 void mouseDragged(MouseEvent evt) {
   //boolean is_bulb_clicked = dist(dragger_x, dragger_y2, mouseX, mouseY) < 20;
-  //boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 15;
-/*  
+  boolean is_bulb_clicked = dist(dragger_x, dragger_y, mouseX, mouseY) < 20;
+ 
   // when user clicks on the bulb
-  if (is_bulb_clicked) {
+  if (is_bulb_clicked & !centerReached) {
     if (!resizingMode & !checkDrag)
     rotatingMode = true;
     print("rotatingMode!");
@@ -392,7 +396,7 @@ void mouseDragged(MouseEvent evt) {
   //  }
   //}
   
-
+/*
   if (dist(screenTransX+width/2 + screenZ / 2, screenTransY+height/2 + screenZ / 2, mouseX, mouseY) < 10) {
     if (!rotatingMode & !checkDrag) 
     resizingMode = true;
@@ -424,7 +428,7 @@ void mouseDragged(MouseEvent evt) {
 
 void mouseReleased()
 {
-  //rotatingMode = false;
+  if (!centerReached) rotatingMode = false;
   checkDrag = false;
   //check to see if user clicked middle of screen within 3 inches
 }
