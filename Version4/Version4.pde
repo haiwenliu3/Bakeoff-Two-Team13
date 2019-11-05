@@ -248,8 +248,8 @@ void draw() {
   // circle that user drags to rotate
   //circle(dragger_x, dragger_y2, 40);
   //draw a line from center to the target
-  stroke(255);
-  line(screenTransX + width/2, screenTransY + height/2, target.x + width/2, target.y + height/2);
+  //stroke(255);
+  //sline(screenTransX + width/2, screenTransY + height/2, target.x + width/2, target.y + height/2);
   
   
   //===========DRAW EXAMPLE CONTROLS=================
