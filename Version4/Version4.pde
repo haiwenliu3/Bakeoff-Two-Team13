@@ -125,10 +125,10 @@ void draw() {
       rect(0, 0, t.z, t.z);
       fill(252, 240, 3);
       circle(0,0,10);
-      circle(-t.z/2, -t.z/2, 10);
-      circle(-t.z/2, t.z/2, 10);
-      circle(t.z/2, -t.z/2, 10);
-      circle(t.z/2, t.z/2, 10);
+      circle(-t.z/2, -t.z/2, 8);
+      circle(-t.z/2, t.z/2, 8);
+      circle(t.z/2, -t.z/2, 8);
+      circle(t.z/2, t.z/2, 8);
       //stroke(255, 0, 0);
       //rect(0, 0, t.z, t.z);
       //noStroke();
@@ -140,19 +140,19 @@ void draw() {
       //println(t.y);
       //noStroke();
     }
-    /*
+    
     else{
     fill(128, 60, 60, 128); //set color to semi translucent
     rect(0, 0, t.z, t.z);
     fill(255, 255, 255, 128);
     circle(0,0,10);
-    circle(-t.z/2, -t.z/2, 5);
-    circle(-t.z/2, t.z/2, 5);
-    circle(t.z/2, -t.z/2, 5);
-    circle(t.z/2, t.z/2, 5);
+    circle(-t.z/2, -t.z/2, 8);
+    circle(-t.z/2, t.z/2, 8);
+    circle(t.z/2, -t.z/2, 8);
+    circle(t.z/2, t.z/2, 8);
     }
 
-    */
+    
     popMatrix();
   }
 
@@ -297,13 +297,23 @@ void mousePressed()
 
 
 void mouseClicked(MouseEvent evt) {
+  if (evt.getCount() == 2) {
+      rotatingMode = false;  
+      centerReached = false;
+      translateMode = true;
+      setDraggerMode = false;
+      screenTransX = mouseX - width/2;
+      screenTransY = mouseY - height/2;
+      screenRotation = 0;
+      screenZ = 50f;
+      dragger_x = mouseX - screenZ/2;
+      dragger_y = mouseY - screenZ/2;
+  }
+  else{
   if (translateMode){
     translateMode = false;
     setDraggerMode = false;
   }
-  
-  print(dragger_x, dragger_y, mouseX, mouseY);
-  print(rotatingMode);
     //check to see if user clicked middle of screen within 3 inches
   // if (dist(width/2 + inchToPix(.8f), height - inchToPix(.8f), mouseX, mouseY)<inchToPix(.8f)){
     
@@ -335,12 +345,12 @@ void mouseClicked(MouseEvent evt) {
       translateMode = true;
       setDraggerMode = false;
       screenTransX = mouseX - width/2;
-      screenTransY = mouseY - width/2;
+      screenTransY = mouseY - height/2;
       screenRotation = 0;
       screenZ = 50f;
       dragger_x = mouseX - screenZ/2;
       dragger_y = mouseY - screenZ/2;
-  }}
+  }}}
 }
 
 

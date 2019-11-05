@@ -137,7 +137,7 @@ void draw() {
       //println(t.y);
       //noStroke();
     }
-    /*
+    
     else{
     fill(128, 60, 60, 128); //set color to semi translucent
     rect(0, 0, t.z, t.z);
@@ -149,7 +149,7 @@ void draw() {
     circle(t.z/2, t.z/2, 5);
     }
 
-    */
+    
     popMatrix();
   }
 
